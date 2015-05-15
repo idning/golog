@@ -89,8 +89,8 @@ func TimeIt(name string, testFunc func(N int64)) {
 			continue
 		}
 
-		fmt.Printf("qps of %10s: %10.0f, diff:%v\n",
-			name, 1.0*float64(n)/diff.Seconds(), diff)
+		fmt.Printf("qps of %10s: %10.0f, runtime :%.2f s\n",
+			name, 1.0*float64(n)/diff.Seconds(), diff.Seconds())
 		break
 	}
 }
