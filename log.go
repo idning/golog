@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -69,7 +70,7 @@ func GetLevel() int {
 }
 
 func SetFile(path string) {
-	Critical("set log file to %v", path)
+	//Critical("set log file to %v", path)
 	f, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		Error("error on SetLogFile: err: %s", err)
@@ -116,6 +117,13 @@ func Debug(format string, v ...interface{}) {
 
 func Verbose(format string, v ...interface{}) {
 	_log.output(LEVEL_VERBOSE, format, v...)
+}
+
+func Stacktrace(level int, format string, v ...interface{}) {
+	if level > _log.level {
+		return
+	}
+	_log.output(level, format+" --- stack: \n%s", v, debug.Stack())
 }
 
 // Cheap integer to fixed-width decimal ASCII.
