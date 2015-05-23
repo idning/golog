@@ -126,6 +126,74 @@ func Stacktrace(level int, format string, v ...interface{}) {
 	_log.output(level, format+" --- stack: \n%s", v, debug.Stack())
 }
 
+/*
+ * variadic is slow because we create temp slices
+ * so we add some help functions
+ */
+func Debug1(format string, a interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_DEBUG, format, a)
+}
+
+func Debug2(format string, a interface{}, b interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_DEBUG, format, a, b)
+}
+
+func Debug3(format string, a interface{}, b interface{}, c interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_DEBUG, format, a, b, c)
+}
+
+func Debug4(format string, a interface{}, b interface{}, c interface{}, d interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_DEBUG, format, a, b, c, d)
+}
+
+func Info1(format string, a interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_INFO, format, a)
+}
+
+func Info2(format string, a interface{}, b interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_INFO, format, a, b)
+}
+
+func Info3(format string, a interface{}, b interface{}, c interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_INFO, format, a, b, c)
+}
+
+func Info4(format string, a interface{}, b interface{}, c interface{}, d interface{}) {
+	if level > _log.level {
+		return
+	}
+
+	_log.output(LEVEL_INFO, format, a, b, c, d)
+}
+
 // Cheap integer to fixed-width decimal ASCII.
 // Give a negative width to avoid zero-padding.
 // Knows the buffer has capacity.
