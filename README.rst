@@ -1,5 +1,12 @@
 yet another golang logging lib
 
+
+log-rotate::
+
+	golog.EnableRotate(time.Hour)
+
+for performance, use ``Debug1/Debug2/Debug3`` instead of ``Debug``
+
 benchmark::
 
     go run benchmark/log_benchmark.go
@@ -9,5 +16,4 @@ benchmark::
     qps of    logging:    4003802, runtime :2.50 s
     qps of      golog:    5986678, runtime :1.67 s
     qps of     beelog:    1170780, runtime :8.54 s
-
 
