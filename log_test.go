@@ -8,6 +8,7 @@ package golog
 
 import (
 	"testing"
+	"time"
 )
 
 func logs() {
@@ -32,11 +33,21 @@ func TestBasic(t *testing.T) {
 	logs()
 }
 
+func TestRotate(t *testing.T) {
+	EnableRotate(time.Minute)
+	i := 0
+	for i < 100 {
+		logs()
+		time.Sleep(time.Second)
+		i++
+	}
+}
+
 func TestBench(t *testing.T) {
 	var i int64
 	var N int64
 
-	N = 1000 * 1000 * 10
+	N = 1000 * 10
 	for i = 0; i < N; i++ {
 		Debug("hello %v %v", "abc", "def")
 	}

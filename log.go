@@ -91,6 +91,58 @@ func ReOpen(path string) {
 	SetFile(_log.path)
 }
 
+func timestr(period time.Duration) string {
+	t := time.Now().Add(time.Second * -10)
+
+	if period == time.Minute {
+		return fmt.Sprintf("%04d%02d%02d%02d%02d",
+			t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute())
+	}
+	if period == time.Hour {
+		return fmt.Sprintf("%04d%02d%02d%02d",
+			t.Year(), t.Month(), t.Day(), t.Hour())
+	}
+	if period == time.Hour*24 {
+		return fmt.Sprintf("%04d%02d%02d",
+			t.Year(), t.Month(), t.Day())
+	}
+
+	return fmt.Sprintf("%04d%02d%02d%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+}
+
+/*
+ * enable rotate whit peirod
+ * peirod can be: time.Minute, time.Hour, 24 * time.Hour
+ */
+func EnableRotate(period time.Duration) {
+	if period != time.Minute && period != time.Hour && period != time.Hour*24 {
+		Error("bad rotate peirod: %s", period)
+		return
+	}
+
+	ch := make(chan bool)
+
+	go func() {
+		for {
+			now := time.Now()
+			nextHour := now.Truncate(period).Add(period).Add(time.Second)
+			timer := time.NewTimer(nextHour.Sub(now))
+			<-timer.C
+			ch <- true
+		}
+	}()
+
+	go func() {
+		for {
+			<-ch
+			filename := fmt.Sprintf("%s.%s", _log.path, timestr(period))
+			os.Rename(_log.path, filename)
+			ReOpen(_log.path)
+		}
+	}()
+}
+
 func Critical(format string, v ...interface{}) {
 	_log.output(LEVEL_CRITICAL, format, v...)
 }
