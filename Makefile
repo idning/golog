@@ -1,5 +1,5 @@
 all:
-	go test
+	go test -race
 
 bench:
 	go run benchmark/log_benchmark.go

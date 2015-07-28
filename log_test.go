@@ -20,7 +20,7 @@ func logs() {
 }
 
 func TestBasic(t *testing.T) {
-	logs()
+	go logs()
 
 	SetLevel(6)
 	logs()

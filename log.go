@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -41,7 +42,7 @@ var (
 // the Writer's Write method.  A Logger can be used simultaneously from
 // multiple goroutines; it guarantees to serialize access to the Writer.
 type Logger struct {
-	level        int
+	level        int32
 	mu           sync.Mutex // ensures atomic writes; protects the following fields
 	out          *os.File   // destination for output
 	path         string     // log file path
@@ -60,13 +61,14 @@ var _log = &Logger{
 	shortfile:    true,
 }
 
-func SetLevel(level int) {
+func SetLevel(level int32) {
 	Critical("set log level to %v", level)
-	_log.level = level
+	atomic.StoreInt32(&_log.level, level)
 }
 
-func GetLevel() int {
-	return _log.level
+func GetLevel() int32 {
+	v := atomic.LoadInt32(&_log.level)
+	return v
 }
 
 func SetFile(path string) {
@@ -171,8 +173,8 @@ func Verbose(format string, v ...interface{}) {
 	_log.output(LEVEL_VERBOSE, format, v...)
 }
 
-func Stacktrace(level int, format string, v ...interface{}) {
-	if level > _log.level {
+func Stacktrace(level int32, format string, v ...interface{}) {
+	if level > GetLevel() {
 		return
 	}
 	_log.output(level, format+" --- stack: \n%s", v, debug.Stack())
@@ -268,7 +270,7 @@ func itoa(buf *[]byte, i int, wid int) {
 }
 
 func (l *Logger) formatHeader(buf *[]byte, t time.Time,
-	level int, file string, line int) {
+	level int32, file string, line int) {
 
 	//2015-05-14
 	year, month, day := t.Date()
@@ -312,8 +314,8 @@ func (l *Logger) formatHeader(buf *[]byte, t time.Time,
 	*buf = append(*buf, ": "...)
 }
 
-func (l *Logger) output(level int, format string, v ...interface{}) error {
-	if level > l.level {
+func (l *Logger) output(level int32, format string, v ...interface{}) error {
+	if level > GetLevel() {
 		return nil
 	}
 
