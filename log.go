@@ -185,7 +185,7 @@ func Stacktrace(level int32, format string, v ...interface{}) {
  * so we add some help functions
  */
 func Debug1(format string, a interface{}) {
-	if LEVEL_DEBUG > _log.level {
+	if LEVEL_DEBUG > GetLevel() {
 		return
 	}
 
@@ -193,7 +193,7 @@ func Debug1(format string, a interface{}) {
 }
 
 func Debug2(format string, a interface{}, b interface{}) {
-	if LEVEL_DEBUG > _log.level {
+	if LEVEL_DEBUG > GetLevel() {
 		return
 	}
 
@@ -201,7 +201,7 @@ func Debug2(format string, a interface{}, b interface{}) {
 }
 
 func Debug3(format string, a interface{}, b interface{}, c interface{}) {
-	if LEVEL_DEBUG > _log.level {
+	if LEVEL_DEBUG > GetLevel() {
 		return
 	}
 
@@ -209,7 +209,7 @@ func Debug3(format string, a interface{}, b interface{}, c interface{}) {
 }
 
 func Debug4(format string, a interface{}, b interface{}, c interface{}, d interface{}) {
-	if LEVEL_DEBUG > _log.level {
+	if LEVEL_DEBUG > GetLevel() {
 		return
 	}
 
@@ -217,7 +217,7 @@ func Debug4(format string, a interface{}, b interface{}, c interface{}, d interf
 }
 
 func Info1(format string, a interface{}) {
-	if LEVEL_INFO > _log.level {
+	if LEVEL_INFO > GetLevel() {
 		return
 	}
 
@@ -225,7 +225,7 @@ func Info1(format string, a interface{}) {
 }
 
 func Info2(format string, a interface{}, b interface{}) {
-	if LEVEL_INFO > _log.level {
+	if LEVEL_INFO > GetLevel() {
 		return
 	}
 
@@ -233,7 +233,7 @@ func Info2(format string, a interface{}, b interface{}) {
 }
 
 func Info3(format string, a interface{}, b interface{}, c interface{}) {
-	if LEVEL_INFO > _log.level {
+	if LEVEL_INFO > GetLevel() {
 		return
 	}
 
@@ -241,7 +241,7 @@ func Info3(format string, a interface{}, b interface{}, c interface{}) {
 }
 
 func Info4(format string, a interface{}, b interface{}, c interface{}, d interface{}) {
-	if LEVEL_INFO > _log.level {
+	if LEVEL_INFO > GetLevel() {
 		return
 	}
 
