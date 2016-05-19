@@ -2,9 +2,12 @@ package golog
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -60,6 +63,8 @@ var _log = &Logger{
 	microseconds: true,
 	shortfile:    true,
 }
+
+var saveTime time.Duration = 0 * time.Second
 
 func SetLevel(level int32) {
 	Critical("set log level to %v", level)
@@ -128,8 +133,8 @@ func EnableRotate(period time.Duration) {
 	go func() {
 		for {
 			now := time.Now()
-			nextHour := now.Truncate(period).Add(period).Add(time.Second)
-			timer := time.NewTimer(nextHour.Sub(now))
+			nextRotateTime := now.Truncate(period).Add(period).Add(time.Second)
+			timer := time.NewTimer(nextRotateTime.Sub(now))
 			<-timer.C
 			ch <- true
 		}
@@ -141,8 +146,32 @@ func EnableRotate(period time.Duration) {
 			filename := fmt.Sprintf("%s.%s", _log.path, timestr(period))
 			os.Rename(_log.path, filename)
 			ReOpen(_log.path)
+			go deleteExpiredLog(period)
 		}
 	}()
+}
+
+func SetLogSaveTime(period time.Duration) {
+	saveTime = period
+}
+
+func deleteExpiredLog(period time.Duration) {
+	dirName := filepath.Dir(_log.path)
+	logName := filepath.Base(_log.path)
+	fileInfos, err := ioutil.ReadDir(dirName)
+	if err != nil {
+		Warn("read dir %s fail, err is %v", dirName, err)
+	}
+
+	for _, fileInfo := range fileInfos {
+		fileName := fileInfo.Name()
+		mtime := fileInfo.ModTime()
+		if saveTime != 0*time.Second &&
+			strings.Index(fmt.Sprintf("%s.", fileName), logName) == 0 &&
+			time.Now().Sub(mtime) >= saveTime {
+			os.Remove(fmt.Sprintf("%s/%s", dirName, fileName))
+		}
+	}
 }
 
 func Critical(format string, v ...interface{}) {
